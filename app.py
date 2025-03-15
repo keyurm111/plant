@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
+import tensorflow.lite as tflite
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from flask import Flask, request, render_template, jsonify, redirect, url_for, session
@@ -37,6 +38,19 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Load trained model
 model = load_model('model.h5')
+
+# Convert to TensorFlow Lite format
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
+
+# Save the model
+with open("model.tflite", "wb") as f:
+    f.write(tflite_model)
+
+print("Model converted to TensorFlow Lite successfully!")
+
+interpreter = tflite.Interpreter(model_path="model.tflite")
+interpreter.allocate_tensors()
 
 # Class labels
 labels = {0: 'Healthy', 1: 'Powdery', 2: 'Rust'}
