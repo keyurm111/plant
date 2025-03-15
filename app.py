@@ -1,7 +1,6 @@
 import os
 import numpy as np
 import tensorflow as tf
-import tensorflow.lite as tflite
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from flask import Flask, request, render_template, jsonify, redirect, url_for, session
@@ -13,17 +12,6 @@ from flask_session import Session  # For session management
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
-
-gpus = tf.config.list_physical_devices('GPU')
-if gpus:
-    try:
-        tf.config.experimental.set_memory_growth(gpus[0], True)
-    except RuntimeError as e:
-        print(e)  # Logs error if GPU memory settings fail
-
-# Limit CPU usage (IMPORTANT for Render)
-tf.config.threading.set_intra_op_parallelism_threads(1)
-tf.config.threading.set_inter_op_parallelism_threads(1)
 
 # Configure session
 app.config["SESSION_PERMANENT"] = False  # adjust based on your needs
@@ -38,19 +26,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Load trained model
 model = load_model('model.h5')
-
-# Convert to TensorFlow Lite format
-converter = tf.lite.TFLiteConverter.from_keras_model(model)
-tflite_model = converter.convert()
-
-# Save the model
-with open("model.tflite", "wb") as f:
-    f.write(tflite_model)
-
-print("Model converted to TensorFlow Lite successfully!")
-
-interpreter = tflite.Interpreter(model_path="model.tflite")
-interpreter.allocate_tensors()
 
 # Class labels
 labels = {0: 'Healthy', 1: 'Powdery', 2: 'Rust'}
