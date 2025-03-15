@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlantAid - Plant Disease Detection</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* General Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+    
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            url('https://images.pexels.com/photos/4032662/pexels-photo-4032662.jpeg?auto=compress&cs=tinysrgb&w=1200')
+            no-repeat center center/cover;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Add padding to the body for small screens */
+        }
+    
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+    
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+    
+        .nav-logo {
+            color: #2E7D32;
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease-in-out;
+        }
+    
+        .nav-logo i {
+            color: #2E7D32;
+            font-size: 2rem;
+            transition: transform 0.3s ease-in-out;
+        }
+    
+        .nav-logo:hover i {
+            transform: rotate(360deg);
+        }
+    
+        /* Navigation Links */
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+        }
+    
+        .nav-btn {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            text-align: center;
+        }
+    
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.5);
+        }
+    
+        /* Responsive Navbar */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem;
+            }
+    
+            .nav-buttons {
+                margin-top: 10px;
+                gap: 10px;
+            }
+        }
+    
+        /* Main Content */
+        .main-content {
+            padding-top: 80px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding-bottom: 20px;
+        }
+    
+        .heading-container {
+            text-align: center;
+            color: white;
+            margin-bottom: 4rem;
+            animation: fadeIn 1s ease-in;
+        }
+    
+        .heading-container h1 {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            margin: 0 auto 1rem;
+        }
+    
+        .slogan {
+            font-size: 1.5rem;
+            opacity: 0.9;
+            max-width: 48rem;
+        }
+    
+        /* Glassmorphism Card Effect */
+        .upload-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.8s ease-out;
+            backdrop-filter: blur(15px);
+            border: 1px solid white;
+            transition: transform 0.3s ease-in-out;
+            justify-items: center/cover;
+        }
+    
+        .upload-card:hover {
+            transform: scale(1.02);
+        }
+    
+        .card-header {
+            text-align: center;
+            color: #2E7D32;
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+    
+        /* Upload Zone */
+        .upload-zone {
+            border: 3px dashed #4CAF50;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+    
+        .upload-zone:hover,
+        .upload-zone.dragging {
+            background: rgba(76, 175, 80, 0.3);
+            border-color: #2E7D32;
+            transform: scale(1.05);
+        }
+    
+        .upload-icon {
+            font-size: 3rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+            animation: bounce 1.5s infinite;
+        }
+    
+        .upload-text {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+    
+        .file-input {
+            display: none;
+        }
+    
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1.5rem;
+        }
+    
+        .browse-btn {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            padding: 12px 20px; /* Adjusted padding */
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 48%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+            margin-bottom: 1.5rem;
+        }
+    
+        .detect-btn {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            padding: 12px 20px; /* Adjusted padding */
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 48%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+            margin-left: 1rem;
+            margin-bottom: 1.5rem;
+        }
+    
+        .browse-btn:hover,
+        .detect-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
+        }
+    
+        /* Image Preview (Modified) */
+        #preview {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            justify-items: center;
+            animation: fadeIn 0.5s ease-in;
+        }
+    
+        /* Enhanced Result Styles */
+        #result {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #333;
+            font-weight: 500;
+            padding: 1rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.5s ease-in;
+            position: relative;
+            overflow: hidden;
+        }
+    
+        #result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://i.imgur.com/atb1Qfs.png') repeat, rgba(76, 175, 80, 0.1);
+            opacity: 0.4;
+            z-index: -1;
+        }
+    
+        #result h3 {
+            color: #2E7D32;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+    
+        #result p {
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+        }
+    
+        #result p strong {
+            font-weight: 600;
+            color: #2E7D32;
+        }
+    
+        #result i {
+            color: #2E7D32;
+            margin-right: 0.5rem;
+        }
+    
+        /* New Styles for Result Card - Hidden by Default */
+        .result-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.8s ease-out;
+            backdrop-filter: blur(15px);
+            border: 1px solid white;
+            transition: transform 0.3s ease-in-out;
+        }
+    
+        .result-card {
+            display: none;
+        }
+    
+        .result-card.show {
+            display: block;
+        }
+    
+        /* Modified CSS for preview-card */
+        .preview-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.8s ease-out;
+            backdrop-filter: blur(15px);
+            border: 1px solid white;
+            transition: transform 0.3s ease-in-out;
+            color: #2E7D32;
+        }
+    
+        .preview-card {
+            display: none;
+        }
+    
+        .preview-card.show {
+            display: block;
+        }
+    
+        upload-card:hover,
+        .result-card:hover,
+        .preview-card:hover {
+            box-shadow: 0 0 15px 7px rgba(76, 175, 80, 0.7);
+            transform: scale(1.03);
+        }
+    
+        /* Footer */
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: white;
+        }
+    
+        .social-icons {
+            margin-top: 1rem;
+        }
+    
+        .social-icons a {
+            color: white;
+            margin: 0 10px;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+    
+        .social-icons a:hover {
+            transform: translateY(-3px) scale(1.1);
+        }
+    
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+    
+            to {
+                opacity: 1;
+            }
+        }
+    
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+    
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+    
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+    
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .heading-container h1 {
+                font-size: 3rem;
+            }
+    
+            .content-container {
+                flex-direction: column;
+                align-items: center;
+            }
+    
+            .upload-card,
+            .result-card,
+            .preview-card {
+                padding: 1.5rem;
+                width: 90%;
+            }
+    
+            /* Make the button stack */
+            .button-container {
+                flex-direction: column;
+            }
+    
+            .browse-btn,
+            .detect-btn {
+                width: 100%;
+                margin-left: 0;
+            }
+        }
+    
+        @media (max-width: 480px) {
+            .heading-container h1 {
+                font-size: 2.5rem;
+            }
+    
+            .card-header {
+                font-size: 1.5rem;
+            }
+    
+            .upload-zone {
+                padding: 1rem;
+            }
+        }
+    
+        /* New container for preview and result */
+        .preview-result-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin-bottom: 2rem;
+        }
+    
+        /* Style the preview and result cards to take up equal space */
+        .preview-card {
+            width: 48%; /* Adjust as needed */
+        }
+    
+        .result-card {
+            width: 48%; /* Adjust as needed */
+        }
+    
+        /*Enhance the button and make it more responsive */
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+    
+        .browse-btn,
+        .detect-btn {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 48%;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+    
+        @media (max-width: 768px) {
+            .button-container {
+                flex-direction: column;
+            }
+    
+            .browse-btn,
+            .detect-btn {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+    
+</head>
+
+<body>
+<nav class="navbar">
+    <a href="#" class="nav-brand">
+        <div class="nav-logo">
+            <i class="fas fa-leaf"></i>
+            PlantAid
+        </div>
+        <ul>
+            <a  class="nav-btn" href="/logout" >Logout</a>        </ul>
+    </a>
+</nav>
+
+<div class="main-content">
+    <div class="heading-container">
+        <h1>Plant Disease Detection</h1>
+        <p class="slogan">Upload a photo of your plant's leaves and our AI will analyze it for signs of disease.</p>
+    </div>
+
+    <!-- Upload Card -->
+    <div class="upload-card">
+        <form id="uploadForm">
+            <div class="upload-zone" id="dropZone">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <p class="upload-text">Drag & drop your image here or click to browse</p>
+                <input type="file" id="fileInput" class="file-input" accept="image/*" required>
+            </div>
+            <button type="button" class="browse-btn" id="browseBtn">Browse Image</button>
+            <button type="submit" class="detect-btn" id="detectBtn">Detect Disease</button>
+        </form>
+    </div>
+
+    <!-- New container for preview and result -->
+    <div class="preview-result-container">
+        <!-- Preview Card -->
+        <div class="preview-card">
+            <div class="card-header">Image Preview</div>
+            <img id="preview" src="#" alt="Image Preview">
+        </div>
+        <!-- Result Card -->
+        <div class="result-card">
+            <div class="card-header">Analysis Result</div>
+            <div id="result">
+                <!-- Results will be displayed here -->
+            </div>
+        </div>
+    </div>
+    
+
+    <footer class="footer">
+        <p>&copy; 2025 <strong>PlantAid</strong> 🌱</p>
+        <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook-f"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+    const detectBtn = document.getElementById('detectBtn');
+    const uploadForm = document.getElementById('uploadForm');
+    const resultDiv = document.getElementById('result');
+    const previewImg = document.getElementById('preview');
+    const dropZone = document.getElementById('dropZone');
+    const resultCard = document.querySelector('.result-card');
+    const previewCard = document.querySelector('.preview-card');
+
+    browseBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length) {
+            handleFilePreview(e.target.files[0]);
+        }
+    });
+
+    // Drag and Drop Events
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.add('dragging');
+        }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            dropZone.classList.remove('dragging');
+        }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+        const files = e.dataTransfer.files;
+        if (files.length) {
+            fileInput.files = files;
+            handleFilePreview(files[0]);
+        }
+    });
+
+    function handleFilePreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            previewImg.style.display = 'block';
+            previewCard.classList.add('show');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (fileInput.files.length === 0) {
+            resultDiv.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Please select an image first.';
+            resultCard.classList.remove('show'); // Make sure the card is hidden
+            return;
+        }
+
+        resultCard.classList.add('show'); // Make the result card visible
+
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        try {
+            resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.error) {
+                resultDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> Error: ${data.error}`;
+            } else {
+                // Create formatted result HTML with icons
+                let resultHTML = `
+                    <h3><i class="fas fa-check-circle"></i> Diagnosis: ${data.prediction}</h3>
+                    <p><strong><i class="fas fa-file-alt"></i> Description:</strong> ${data.description}</p>
+                    <p><strong><i class="fas fa-exclamation-triangle"></i> Prevention:</strong> ${data.prevention}</p>
+                `;
+                resultDiv.innerHTML = resultHTML;
+            }
+        } catch (error) {
+            resultDiv.innerHTML = `<i class="fas fa-exclamation-triangle"></i> An error occurred. Please try again.`;
+        }
+    });
+    
+        (function()
+        {
+            if(!window.chatbase||window.chatbase("getState")!=="initialized")
+            {window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};
+            window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q")
+            {return target.q}return(...args)=>target(prop,...args)}})}
+            const onLoad=function()
+            {const script=document.createElement("script");
+            script.src="https://www.chatbase.co/embed.min.js";
+            script.id="oE_ysAeqDB4NgPs3ghYvS";
+            script.domain="www.chatbase.co";
+            document.body.appendChild(script)};
+            if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+            
+</script>
+</body>
+
+</html>

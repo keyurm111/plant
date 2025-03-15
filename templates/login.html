@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <title>PlantAid - Login/Signup</title>
+    <style>
+        /* Global Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+            url('https://images.pexels.com/photos/4032662/pexels-photo-4032662.jpeg?auto=compress&cs=tinysrgb&w=1200')
+            no-repeat center center/cover;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column; /* Changed to column */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            background: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .nav-logo {
+            color: #2E7D32;
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .nav-logo i {
+            color: #2E7D32;
+            font-size: 2rem;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .nav-logo:hover i {
+            transform: rotate(360deg);
+        }
+
+        /* Navigation Links */
+        .nav-buttons {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.5);
+        }
+
+        /* Responsive Navbar */
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+                align-items: center;
+                padding: 1rem;
+            }
+
+            .nav-buttons {
+                margin-top: 10px;
+                gap: 10px;
+            }
+        }
+
+        /* Heading Container Styles */
+        .heading-container {
+            text-align: center;
+            color: #fff;
+            margin-bottom:5px; /* Add some space between the heading and the form */
+        }
+
+        .heading-container h1 {
+            font-size: 4rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+            max-width: 800px;
+            margin: 0 auto 1rem;
+        }
+
+        .heading-container .slogan {
+            font-size: 1.2rem;
+            
+            color: #ddd;
+        }
+
+
+        /* Container Styles */
+        .container {
+            background-color: #fff;
+            padding: 1rem;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            border: 1px solid white;
+            transition: transform 0.3s ease-in-out;
+            animation: slideUp 0.8s ease-out;
+            justify-content: center;
+            align-items: center;
+            items-align: center;
+            display: block; /* Changed from fixed to block */
+            margin-top: 2rem;
+        }
+
+        p {
+            text-align: center;
+            padding-top: 2rem;
+            color: #333;
+        }
+
+        /* Form Styles */
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 2px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 100%;
+            text-align: center;
+            margin-top: 1.5rem;
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
+        }
+
+        /* Tabbed Interface Styles */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-links {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        /* Tab Buttons */
+        .tab-links button {
+
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            width: 48%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
+            background: linear-gradient(135deg, #2E7D32, #4CAF50);
+            color: white;
+
+        }
+
+        .tab-links button.active {
+            background: linear-gradient(135deg, #1e7e34, #3e8e41);
+            /* Darker version of the gradient */
+            color: white;
+        }
+
+        .tab-links button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(46, 125, 50, 0.4);
+        }
+        
+        /* Animation for Container */
+        @keyframes slideUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="nav-brand">
+            <div class="nav-logo">
+                <i class="fas fa-leaf"></i>
+                PlantAid
+            </div>
+        </a>
+    </nav>
+
+    <div class="heading-container">
+        <h1>Plant Disease Detection</h1>
+    </div>
+
+    <div class="container">
+        <div class="tab-links">
+            <button class="active" id="login-tab">Login</button>
+            <button id="signup-tab">Signup</button>
+        </div>
+
+        <div class="tab-content active" id="login-content">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div class="tab-content" id="signup-content">
+            <h2>Signup</h2>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email-signup">Email</label>
+                    <input type="email" id="email-signup" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password-signup">Password</label>
+                    <input type="password" id="password-signup" name="password" required>
+                </div>
+                <button type="submit">Signup</button>
+            </form>
+        </div>
+        <p>If don't have any account? Please press signup button</p>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const loginTab = document.getElementById('login-tab');
+            const signupTab = document.getElementById('signup-tab');
+            const loginContent = document.getElementById('login-content');
+            const signupContent = document.getElementById('signup-content');
+
+            loginTab.addEventListener('click', function () {
+                loginTab.classList.add('active');
+                signupTab.classList.remove('active');
+                loginContent.classList.add('active');
+                signupContent.classList.remove('active');
+            });
+
+            signupTab.addEventListener('click', function () {
+                signupTab.classList.add('active');
+                loginTab.classList.remove('active');
+                signupContent.classList.add('active');
+                loginContent.classList.remove('active');
+            });
+
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+
+            loginForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                try {
+                    const loginResponse = await fetch('http://localhost:5001/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email: email, password: password })
+                    });
+
+                    const loginData = await loginResponse.json();
+
+                    if (loginResponse.ok) {
+                        const token = loginData.token;
+
+                        const verifyResponse = await fetch('/verify_token', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: new URLSearchParams({ token: token })
+                        });
+
+                        const verifyData = await verifyResponse.json();
+
+                        if (verifyResponse.ok) {
+                            window.location.href = '/';
+                        } else {
+                            alert(verifyData.message || 'Token verification failed');
+                        }
+                    } else {
+                        alert(loginData.error || loginData.message || 'Login failed');
+                    }
+                } catch (error) {
+                    console.error('Error during login:', error);
+                    alert('An error occurred during login.');
+                }
+            });
+
+            signupForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email-signup').value;
+                const password = document.getElementById('password-signup').value;
+
+                try {
+                    const signupResponse = await fetch('http://localhost:5001/signup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ username: username, email: email, password: password })
+                    });
+
+                    const signupData = await signupResponse.json();
+
+                    if (signupResponse.ok) {
+                        alert('Signup successful!');
+                        window.location.href = '/login';
+                    } else {
+                        alert(signupData.error || signupData.message || 'Signup failed');
+                    }
+                } catch (error) {
+                    console.error('Error during signup:', error);
+                    alert('An error occurred during signup.');
+                }
+            });
+        });
+    </script>
+   
+</body>
+</html>
