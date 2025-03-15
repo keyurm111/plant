@@ -6,5 +6,6 @@ numpy
 Pillow
 werkzeug
 requests
+tflite-runtime
 
 
