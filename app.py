@@ -13,6 +13,9 @@ from flask_session import Session  # For session management
 app = Flask(__name__)
 CORS(app)
 
+# Limit TensorFlow memory usage to avoid Render OOM errors
+tf.config.experimental.set_memory_growth(tf.config.list_physical_devices('GPU')[0], True)  # Avoids full memory allocation
+
 # Configure session
 app.config["SESSION_PERMANENT"] = False  # adjust based on your needs
 app.config["SESSION_TYPE"] = "filesystem"  # or "redis", "mongodb"
