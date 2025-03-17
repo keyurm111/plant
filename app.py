@@ -1,3 +1,4 @@
+import utils.session
 import os
 import numpy as np
 import tensorflow as tf
@@ -125,6 +126,6 @@ def logout():
     session["logged_in"] = False
     return redirect(url_for("login"))
 
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use Railway-assigned port
-    app.run(host="0.0.0.0", port=port)
+# Run Flask app
+if __name__ == '__main__':
+    app.run(debug=True, host='127.0.0.1', port=5000) # Ensure Flask runs on a different port
